@@ -25,6 +25,8 @@ class GameEngine:
             Enemy(ROWS-1, 0),       # bottom-left
             Enemy(0, COLS-1),       # top-right
         ]
+        self.start_time = pygame.time.get_ticks()
+        self.speed_tier = 1
         self.exit_rect = pygame.Rect((COLS//2)*CELL+5, (ROWS//2)*CELL+5, CELL-10, CELL-10)
         self.caught = False
         self.won = False
@@ -37,6 +39,14 @@ class GameEngine:
 
     def update(self):
         if self.caught or self.won: return
+
+        elapsed = pygame.time.get_ticks() - self.start_time
+        self.speed_tier = 1 + elapsed // 15000
+        new_interval = max(5, 20 - (self.speed_tier - 1) * 2)
+
+        for enemy in self.enemies:
+            enemy.move_interval = new_interval
+
         keys = pygame.key.get_pressed()
         self.player.move(keys, self.walls, ROWS, COLS)
         for enemy in self.enemies:
@@ -65,8 +75,12 @@ class GameEngine:
             enemy.draw(self.screen)
         hud=pygame.Rect(0,ROWS*CELL,WIDTH,50)
         pygame.draw.rect(self.screen,(30,30,50),hud)
-        info=self.font.render("Reach EXIT before the enemy catches you!  R=Restart",True,(200,200,200))
-        self.screen.blit(info,(8,ROWS*CELL+14))
+        info = self.font.render(
+        f"Speed Tier: {self.speed_tier}  |  Survive!  R=Restart",
+        True,
+        (200, 200, 200)
+        )
+        self.screen.blit(info, (8, ROWS*CELL+14))
         if self.caught:
             self._overlay("CAUGHT!", (220,60,60))
         if self.won:
