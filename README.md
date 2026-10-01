@@ -70,4 +70,4 @@ maze-chase/
 - [x] Multiple enemies work independently
 - [x] Power pellet freezes enemy correctly
 - [x] Speed ramp increases difficulty over time
-- [ ] Code reviewed with LLM (include chat link)
+- [x] Code reviewed with LLM (include chat link)
