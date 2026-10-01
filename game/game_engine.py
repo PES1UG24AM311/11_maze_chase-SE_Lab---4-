@@ -37,6 +37,7 @@ class GameEngine:
         self.pellet_collected = False
         self.caught = False
         self.won = False
+        self.score = 0
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -46,6 +47,7 @@ class GameEngine:
 
     def update(self):
         if self.caught or self.won: return
+        self.score += 1
 
         elapsed = pygame.time.get_ticks() - self.start_time
         self.speed_tier = 1 + elapsed // 15000
@@ -98,9 +100,9 @@ class GameEngine:
         hud=pygame.Rect(0,ROWS*CELL,WIDTH,50)
         pygame.draw.rect(self.screen,(30,30,50),hud)
         info = self.font.render(
-        f"Speed Tier: {self.speed_tier}  |  Survive!  R=Restart",
-        True,
-        (200, 200, 200)
+            f"Speed Tier: {self.speed_tier}  |  Survived: {self.score // 60}s  |  R=Restart",
+            True,
+            (200, 200, 200)
         )
         self.screen.blit(info, (8, ROWS*CELL+14))
         if self.caught:
@@ -115,8 +117,15 @@ class GameEngine:
         self.screen.blit(surf,(0,0))
         msg=self.big_font.render(text,True,color)
         sub=self.font.render("Press R to Restart",True,(200,200,200))
-        self.screen.blit(msg,(WIDTH//2-msg.get_width()//2,ROWS*CELL//2-30))
-        self.screen.blit(sub,(WIDTH//2-sub.get_width()//2,ROWS*CELL//2+20))
+        score_msg = self.font.render(
+        f"Final Score: {self.score // 60}s",
+            True,
+            (255, 255, 255)
+        )
+
+        self.screen.blit(msg, (WIDTH//2-msg.get_width()//2, ROWS*CELL//2-50))
+        self.screen.blit(score_msg, (WIDTH//2-score_msg.get_width()//2, ROWS*CELL//2+5))
+        self.screen.blit(sub, (WIDTH//2-sub.get_width()//2, ROWS*CELL//2+45))
 
     def run(self):
         running=True
