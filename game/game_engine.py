@@ -28,6 +28,13 @@ class GameEngine:
         self.start_time = pygame.time.get_ticks()
         self.speed_tier = 1
         self.exit_rect = pygame.Rect((COLS//2)*CELL+5, (ROWS//2)*CELL+5, CELL-10, CELL-10)
+        self.pellet_rect = pygame.Rect(
+            1 * CELL + CELL//2 - 8,
+            1 * CELL + CELL//2 - 8,
+            16,
+            16
+        )
+        self.pellet_collected = False
         self.caught = False
         self.won = False
 
@@ -49,6 +56,13 @@ class GameEngine:
 
         keys = pygame.key.get_pressed()
         self.player.move(keys, self.walls, ROWS, COLS)
+
+        if not self.pellet_collected and self.player.rect.colliderect(self.pellet_rect):
+            self.pellet_collected = True
+            for enemy in self.enemies:
+                enemy.frozen = True
+                enemy.freeze_timer = 300
+
         for enemy in self.enemies:
             enemy.update(self.walls, self.player, ROWS, COLS)
             if self.player.rect.colliderect(enemy.rect):
@@ -70,6 +84,14 @@ class GameEngine:
         pygame.draw.rect(self.screen,(80,200,80),self.exit_rect,border_radius=4)
         lbl=self.font.render("EXIT",True,(20,80,20))
         self.screen.blit(lbl,(self.exit_rect.x+2,self.exit_rect.y+6))
+
+        if not self.pellet_collected:
+            pygame.draw.circle(
+            self.screen,
+            (255, 220, 0),
+            self.pellet_rect.center,
+            8
+        ) 
         self.player.draw(self.screen)
         for enemy in self.enemies:
             enemy.draw(self.screen)

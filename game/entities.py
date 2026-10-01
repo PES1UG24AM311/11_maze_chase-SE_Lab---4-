@@ -38,9 +38,18 @@ class Enemy:
         self.color = (220, 60, 60)
         self.timer = 0
         self.move_interval = 20  # frames between cell moves
+        self.frozen = False
+        self.freeze_timer = 0
 
     def update(self, walls, player, rows, cols):
         from game.maze import bfs
+
+        if self.frozen:
+            self.freeze_timer -= 1
+            if self.freeze_timer <= 0:
+                self.frozen = False
+            return
+
         self.timer += 1
         if self.timer >= self.move_interval:
             self.timer = 0
@@ -58,3 +67,12 @@ class Enemy:
         for ex in [self.rect.x+4, self.rect.x+14]:
             pygame.draw.circle(screen, (255,255,255), (ex, self.rect.y+8), 4)
             pygame.draw.circle(screen, (0,0,0), (ex+1, self.rect.y+8), 2)
+            
+        if self.frozen:
+            pygame.draw.circle(
+            screen,
+            (100, 200, 255),
+            self.rect.center,
+            16,
+            3
+        )
